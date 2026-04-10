@@ -129,3 +129,70 @@ window.OOP_QUESTIONS = [
     explanation: 'Overriding replaces or extends inherited instance behavior in a subclass, resolved dynamically in many languages.'
   }
 ];
+
+/**
+ * Aptitude & reasoning MCQs for the timed Aptitude Quiz module.
+ * Same shape as OOP: q, options (4), correct (0–3), explanation (after wrong or timeout).
+ */
+window.APTITUDE_QUESTIONS = [
+  {
+    q: 'A number series: 3, 7, 15, 31, 63, … What is the next term?',
+    options: ['95', '111', '127', '129'],
+    correct: 2,
+    explanation: 'Terms follow 2ⁿ−1: 2²−1=3, 2³−1=7, … 2⁶−1=63, so next is 2⁷−1=127.'
+  },
+  {
+    q: 'If 15% of a number is 45, what is the number?',
+    options: ['200', '250', '300', '350'],
+    correct: 2,
+    explanation: 'Let the number be N. Then 0.15N = 45, so N = 45 / 0.15 = 300.'
+  },
+  {
+    q: 'A train 180 m long crosses a pole in 9 seconds. What is its speed in km/h?',
+    options: ['60 km/h', '72 km/h', '80 km/h', '90 km/h'],
+    correct: 1,
+    explanation: 'Speed = 180 m / 9 s = 20 m/s. Convert: 20 × (18/5) = 72 km/h.'
+  },
+  {
+    q: 'If A is 20% more than B, then B is approximately what percent less than A?',
+    options: ['About 12.5%', 'About 16.67%', 'About 20%', 'About 25%'],
+    correct: 1,
+    explanation: 'Let B = 100, then A = 120. B is (20/120)×100 ≈ 16.67% less than A.'
+  },
+  {
+    q: 'Odd one out:',
+    options: ['17', '23', '27', '31'],
+    correct: 2,
+    explanation: '27 is composite (3×9); 17, 23, and 31 are prime numbers.'
+  },
+  {
+    q: 'In a certain code, HAND is written as IBOE (each letter shifted by +1). How is YEAR coded?',
+    options: ['ZFBS', 'ZFBT', 'YFBS', 'ZEBS'],
+    correct: 0,
+    explanation: 'Each letter moves one step forward in the alphabet: Y→Z, E→F, A→B, R→S, giving ZFBS.'
+  },
+  {
+    q: 'At 3:15, the angle between the hour and minute hands of a clock is closest to:',
+    options: ['0°', '7.5°', '15°', '90°'],
+    correct: 1,
+    explanation: 'Minute hand at 3; hour hand has moved ¼ of the way from 3 to 4 (7.5° from 3), so the gap is about 7.5°.'
+  },
+  {
+    q: 'If the day after tomorrow is Wednesday, what day was it yesterday?',
+    options: ['Saturday', 'Sunday', 'Monday', 'Tuesday'],
+    correct: 1,
+    explanation: 'Day after tomorrow = Wednesday ⇒ tomorrow = Tuesday ⇒ today = Monday ⇒ yesterday = Sunday.'
+  },
+  {
+    q: 'A pipe fills a tank in 12 hours. Another empties it in 18 hours. If both are open, the net part of the tank filled in one hour is:',
+    options: ['1/36', '1/12', '1/6', '5/36'],
+    correct: 0,
+    explanation: 'Net rate per hour = 1/12 − 1/18 = (3−2)/36 = 1/36 of the tank.'
+  },
+  {
+    q: 'In a row of boys, Raj is 7th from the left and 12th from the right. How many boys are in the row?',
+    options: ['17', '18', '19', '20'],
+    correct: 1,
+    explanation: 'Total = position from left + position from right − 1 = 7 + 12 − 1 = 18.'
+  }
+];
