@@ -12,6 +12,7 @@ const AVAILABLE_MODULES = [
 class FeedbackSystem {
     constructor() {
         this.feedbacks = [];
+        this.tempModuleRatings = {};
         this.loadFeedbacks();
         this.init();
     }
@@ -64,46 +65,90 @@ class FeedbackSystem {
         if (!container) return;
 
         container.innerHTML = AVAILABLE_MODULES.map(module => `
-            <div class="module-rating-item">
+            <div class="module-rating-item" data-module-id="${module.id}">
                 <span class="module-name">${module.name}</span>
                 <div class="module-stars" data-module="${module.id}">
                     ${[1, 2, 3, 4, 5].map(star => `
-                        <span class="star" data-value="${star}">★</span>
+                        <span class="star" data-value="${star}" data-module="${module.id}">★</span>
                     `).join('')}
                 </div>
+                <span class="rating-value" id="rating-${module.id}" style="margin-left: 10px; color: #667eea; font-weight: bold;">Not rated</span>
             </div>
         `).join('');
 
         // Add click handlers for module stars
-        document.querySelectorAll('.module-stars').forEach(starContainer => {
-            const moduleId = starContainer.dataset.module;
-            const stars = starContainer.querySelectorAll('.star');
+        this.attachModuleStarHandlers();
+    }
+
+    attachModuleStarHandlers() {
+        // Get all star elements
+        const allStars = document.querySelectorAll('.star');
+        
+        allStars.forEach(star => {
+            // Remove existing listeners to avoid duplicates
+            star.removeEventListener('click', this.starClickHandler);
             
-            stars.forEach(star => {
-                star.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const value = parseInt(star.dataset.value);
-                    this.setModuleRating(moduleId, value, stars);
-                });
-            });
+            // Create new handler
+            this.starClickHandler = (e) => {
+                e.stopPropagation();
+                const moduleId = star.dataset.module;
+                const ratingValue = parseInt(star.dataset.value);
+                this.setModuleRating(moduleId, ratingValue);
+            };
+            
+            star.addEventListener('click', this.starClickHandler);
+            
+            // Add hover effects
+            star.removeEventListener('mouseenter', this.starHoverHandler);
+            star.removeEventListener('mouseleave', this.starLeaveHandler);
+            
+            this.starHoverHandler = () => {
+                const moduleId = star.dataset.module;
+                const ratingValue = parseInt(star.dataset.value);
+                this.highlightStars(moduleId, ratingValue);
+            };
+            
+            this.starLeaveHandler = () => {
+                const moduleId = star.dataset.module;
+                const currentRating = this.tempModuleRatings[moduleId] || 0;
+                this.highlightStars(moduleId, currentRating);
+            };
+            
+            star.addEventListener('mouseenter', this.starHoverHandler);
+            star.addEventListener('mouseleave', this.starLeaveHandler);
         });
     }
 
-    setModuleRating(moduleId, rating, stars) {
-        // Store temporarily in memory until form submission
-        if (!this.tempModuleRatings) {
-            this.tempModuleRatings = {};
-        }
-        this.tempModuleRatings[moduleId] = rating;
-
-        // Update UI
+    highlightStars(moduleId, rating) {
+        const stars = document.querySelectorAll(`.star[data-module="${moduleId}"]`);
         stars.forEach((star, index) => {
-            if (index < rating) {
+            const starValue = parseInt(star.dataset.value);
+            if (starValue <= rating) {
                 star.classList.add('active');
+                star.style.color = '#ffc107';
             } else {
                 star.classList.remove('active');
+                star.style.color = '#ddd';
             }
         });
+    }
+
+    setModuleRating(moduleId, rating) {
+        // Store in temporary memory
+        this.tempModuleRatings[moduleId] = rating;
+        
+        // Update UI stars
+        this.highlightStars(moduleId, rating);
+        
+        // Update rating value display
+        const ratingDisplay = document.getElementById(`rating-${moduleId}`);
+        if (ratingDisplay) {
+            ratingDisplay.textContent = `${rating}★`;
+            ratingDisplay.style.color = '#28a745';
+        }
+        
+        // Show feedback
+        this.showNotification(`${AVAILABLE_MODULES.find(m => m.id === moduleId).name} rated ${rating}★`, 'success');
     }
 
     setupEventListeners() {
@@ -114,13 +159,41 @@ class FeedbackSystem {
                 this.submitFeedback();
             });
         }
+        
+        // Add hover effects for overall rating stars
+        const overallStars = document.querySelectorAll('.star-rating label');
+        overallStars.forEach(star => {
+            star.addEventListener('mouseenter', () => {
+                const forAttr = star.getAttribute('for');
+                const value = parseInt(forAttr.replace('star', ''));
+                this.highlightOverallStars(value);
+            });
+            
+            star.addEventListener('mouseleave', () => {
+                const selected = document.querySelector('input[name="rating"]:checked');
+                const value = selected ? parseInt(selected.value) : 0;
+                this.highlightOverallStars(value);
+            });
+        });
+    }
+
+    highlightOverallStars(rating) {
+        const labels = document.querySelectorAll('.star-rating label');
+        labels.forEach((label, index) => {
+            const starValue = 5 - index;
+            if (starValue <= rating) {
+                label.style.color = '#ffc107';
+            } else {
+                label.style.color = '#ddd';
+            }
+        });
     }
 
     submitFeedback() {
         // Get overall rating
         const selectedRating = document.querySelector('input[name="rating"]:checked');
         if (!selectedRating) {
-            alert('Please rate the platform before submitting!');
+            this.showNotification('Please rate the platform before submitting!', 'error');
             return;
         }
 
@@ -128,12 +201,17 @@ class FeedbackSystem {
         const comment = document.getElementById('comment').value.trim();
 
         if (!comment) {
-            alert('Please leave a comment before submitting!');
+            this.showNotification('Please leave a comment before submitting!', 'error');
             return;
         }
 
-        // Get module ratings
-        const moduleRatings = this.tempModuleRatings || {};
+        // Get module ratings (only those that were rated)
+        const moduleRatings = {};
+        for (const [moduleId, rating] of Object.entries(this.tempModuleRatings)) {
+            if (rating > 0) {
+                moduleRatings[moduleId] = rating;
+            }
+        }
 
         // Create feedback object
         const feedback = {
@@ -145,7 +223,7 @@ class FeedbackSystem {
         };
 
         // Save to array
-        this.feedbacks.unshift(feedback); // Add to beginning
+        this.feedbacks.unshift(feedback);
         this.saveFeedbacks();
 
         // Reset form
@@ -160,17 +238,30 @@ class FeedbackSystem {
     }
 
     resetForm() {
-        // Clear rating stars
+        // Clear overall rating stars
         const radioButtons = document.querySelectorAll('input[name="rating"]');
         radioButtons.forEach(radio => radio.checked = false);
+        
+        // Reset overall stars color
+        const labels = document.querySelectorAll('.star-rating label');
+        labels.forEach(label => {
+            label.style.color = '#ddd';
+        });
         
         // Clear comment
         document.getElementById('comment').value = '';
         
         // Clear module ratings
         this.tempModuleRatings = {};
-        document.querySelectorAll('.module-stars .star').forEach(star => {
-            star.classList.remove('active');
+        
+        // Reset all module stars and displays
+        AVAILABLE_MODULES.forEach(module => {
+            this.highlightStars(module.id, 0);
+            const ratingDisplay = document.getElementById(`rating-${module.id}`);
+            if (ratingDisplay) {
+                ratingDisplay.textContent = 'Not rated';
+                ratingDisplay.style.color = '#667eea';
+            }
         });
     }
 
@@ -187,6 +278,14 @@ class FeedbackSystem {
                 <div class="stat-card">
                     <div class="stat-value">0.0</div>
                     <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Modules Rated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Rating Distribution</div>
+                    <div style="margin-top: 10px;">No ratings yet</div>
                 </div>
             `;
             return;
@@ -211,7 +310,9 @@ class FeedbackSystem {
         // Rating distribution
         const ratingDistribution = [0, 0, 0, 0, 0];
         this.feedbacks.forEach(f => {
-            ratingDistribution[f.overallRating - 1]++;
+            if (f.overallRating >= 1 && f.overallRating <= 5) {
+                ratingDistribution[f.overallRating - 1]++;
+            }
         });
 
         statsContainer.innerHTML = `
@@ -231,15 +332,19 @@ class FeedbackSystem {
             <div class="stat-card">
                 <div class="stat-label">Rating Distribution</div>
                 <div style="margin-top: 10px;">
-                    ${[5,4,3,2,1].map(rating => `
-                        <div style="display: flex; align-items: center; gap: 5px; margin: 5px 0;">
-                            <span style="width: 20px;">${rating}★</span>
-                            <div style="flex: 1; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
-                                <div style="width: ${(ratingDistribution[rating-1] / totalFeedbacks * 100)}%; height: 100%; background: #ffc107;"></div>
+                    ${[5,4,3,2,1].map(rating => {
+                        const count = ratingDistribution[rating-1] || 0;
+                        const percentage = totalFeedbacks > 0 ? (count / totalFeedbacks * 100) : 0;
+                        return `
+                            <div style="display: flex; align-items: center; gap: 5px; margin: 5px 0;">
+                                <span style="width: 25px;">${rating}★</span>
+                                <div style="flex: 1; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
+                                    <div style="width: ${percentage}%; height: 100%; background: #ffc107; transition: width 0.3s;"></div>
+                                </div>
+                                <span style="width: 40px; font-size: 12px;">${count}</span>
                             </div>
-                            <span style="width: 40px;">${ratingDistribution[rating-1]}</span>
-                        </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             </div>
         `;
@@ -274,10 +379,10 @@ class FeedbackSystem {
                         <strong>Module Ratings:</strong><br>
                         ${Object.entries(feedback.moduleRatings).map(([moduleId, rating]) => {
                             const module = AVAILABLE_MODULES.find(m => m.id === moduleId);
-                            return `<span class="module-badge">${module ? module.name : moduleId}: ${rating}★</span>`;
+                            return `<span class="module-badge">${module ? module.name : moduleId}: ${rating}★ ${this.getStarDisplay(rating)}</span>`;
                         }).join('')}
                     </div>
-                ` : ''}
+                ` : '<div class="feedback-modules"><em>No module ratings provided</em></div>'}
             </div>
         `).join('');
     }
@@ -315,8 +420,13 @@ class FeedbackSystem {
     }
 
     showNotification(message, type) {
+        // Remove existing notification
+        const existing = document.querySelector('.custom-notification');
+        if (existing) existing.remove();
+        
         // Create notification element
         const notification = document.createElement('div');
+        notification.className = 'custom-notification';
         notification.textContent = message;
         notification.style.cssText = `
             position: fixed;
@@ -329,6 +439,7 @@ class FeedbackSystem {
             z-index: 10000;
             animation: slideIn 0.3s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-weight: 500;
         `;
         
         document.body.appendChild(notification);
@@ -399,6 +510,32 @@ style.textContent = `
             transform: translateX(100%);
             opacity: 0;
         }
+    }
+    
+    .star {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 24px;
+    }
+    
+    .star:hover {
+        transform: scale(1.1);
+    }
+    
+    .star.active {
+        color: #ffc107 !important;
+    }
+    
+    .module-stars {
+        display: flex;
+        gap: 5px;
+        cursor: pointer;
+    }
+    
+    .rating-value {
+        min-width: 80px;
+        font-size: 14px;
+        transition: all 0.3s ease;
     }
 `;
 document.head.appendChild(style);
