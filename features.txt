@@ -1,0 +1,139 @@
+PROJECT: Interview Arcade
+
+Feature 1: Tic Tac Toe + OOP Quiz
+Description:
+Create a two-player tic tac toe game. After the game ends, the losing player must answer 5 OOP MCQs ( provide option - attempt in cpp / javascript / python and based on user select procide question layout)
+
+Expected Output:
+- Functional 3x3 grid
+- Detect winner or draw
+- Show OOP quiz after game ends
+- Display score
+
+Testing:
+- Check win conditions
+- Check quiz trigger
+- Validate MCQ answers
+
+
+Feature 2: Memory Card Game
+Description:
+Create 16 cards (8 pairs) with technical terms and their meanings.
+
+Expected Output:
+- Flip animation
+- Match pairs correctly
+- Lock matched cards
+
+Testing:
+- Matching logic
+- Flip behavior
+- Game completion
+
+
+Feature 3: Aptitude Quiz
+Description:
+MCQ-based quiz with explanation for wrong answers.
+
+Expected Output:
+- Question display
+- Option selection
+- Explanation shown on wrong answer
+
+Testing:
+- Answer validation
+- Explanation visibility
+
+
+Feature 4: Resume Keyword Matcher
+Description:
+Upload resume text and match keywords with job role.
+
+Expected Output:
+- Resume input
+- Job role input
+- Match percentage displayed
+
+Testing:
+- Keyword extraction
+- Matching accuracy
+
+
+Feature 5: SQL Fill in the Blanks
+Description:
+Provide incomplete SQL queries. User fills missing parts.
+
+Expected Output:
+- Input fields
+- Correct/incorrect validation
+- At least 5 queries
+
+Testing:
+- Input validation
+- Answer checking
+
+
+Feature 6: Image Riddles
+Description:
+Show image-based riddles and accept user answers.
+
+Expected Output:
+- Image display
+- Input field
+- Correct answer validation
+
+Testing:
+- Input matching
+- Case handling
+
+
+Feature 7: DSA Match the Following
+Description:
+Two columns. User connects items using mouse.
+
+Expected Output:
+- Draw lines between items
+- Validate matches
+
+Testing:
+- Line drawing
+- Correct mapping
+
+
+Feature 8: Debug the Code
+Description:
+Display code snippet with errors. User selects incorrect line.
+
+Expected Output:
+- Code display
+- Clickable lines
+- Highlight correct error
+
+Testing:
+- Selection validation
+
+
+Feature 9: Feedback System
+Description:
+User gives rating using stars and optional comment.
+
+Expected Output:
+- Star selection UI
+- Save feedback using localStorage
+
+Testing:
+- Rating storage
+- UI interaction
+
+
+Feature 10: Dashboard
+Description:
+Display user progress and scores.
+
+Expected Output:
+- Total score
+- Completed modules
+- Progress bar
+
+Testing:
+- Data retrieval from localStorage

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Arcade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #111010;
+      --ink-muted: #6b6b6b;
+      --ink-faint: #e8e6e0;
+      --paper: #faf9f6;
+      --paper-off: #f1efe8;
+      --accent: #c84b2f;
+      --accent-soft: #f5ece8;
+      --accent-dark: #9a3520;
+      --rule: #d8d6cf;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+      --max: 1100px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--paper);
+      border-bottom: 1px solid var(--rule);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-brand span { color: var(--accent); }
+    .nav-link {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      padding-top: 60px;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: var(--max);
+      margin: 0 auto;
+      align-items: center;
+    }
+
+    .hero-left {
+      padding: 4rem 2rem 4rem 2rem;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px; height: 1px;
+      background: var(--accent);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 5.5vw, 5rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--ink-muted);
+      line-height: 1.7;
+      max-width: 440px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+    .btn-primary svg { transition: transform 0.2s; }
+    .btn-primary:hover svg { transform: translateX(3px); }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--ink-muted); color: var(--accent); }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--rule);
+    }
+    .stat-item {}
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-top: 4px;
+    }
+
+    /* HERO RIGHT — decorative grid */
+    .hero-right {
+      padding: 6rem 2rem 4rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      animation: fadeUp 0.8s 0.15s ease both;
+    }
+
+    .module-preview {
+      background: var(--paper-off);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1.25rem;
+      cursor: default;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .module-preview:hover {
+      border-color: var(--ink-muted);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+    }
+    .module-preview:nth-child(2) { margin-top: 20px; }
+    .module-preview:nth-child(4) { margin-top: -20px; }
+
+    .mp-icon {
+      width: 36px; height: 36px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 0.75rem;
+    }
+    .mp-icon.red { background: #fce8e4; }
+    .mp-icon.blue { background: #e4edf9; }
+    .mp-icon.green { background: #e5f1e5; }
+    .mp-icon.amber { background: #faf0e0; }
+
+    .mp-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+    .mp-desc {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+      margin-top: 4px;
+    }
+
+    /* FEATURES STRIP */
+    .features {
+      border-top: 1px solid var(--rule);
+      background: var(--paper-off);
+      padding: 4rem 2rem;
+    }
+    .features-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+    .features-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .feature-item {
+      padding: 2rem;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+    }
+    .feature-item:first-child { border-radius: 6px 0 0 6px; }
+    .feature-item:last-child { border-radius: 0 6px 6px 0; }
+    .feature-num {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: var(--ink-faint);
+      line-height: 1;
+      margin-bottom: 0.75rem;
+    }
+    .feature-title {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .feature-desc {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--ink-muted);
+      line-height: 1.6;
+    }
+
+    /* CTA BAND */
+    .cta-band {
+      padding: 5rem 2rem;
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .cta-text {}
+    .cta-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .cta-sub {
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--ink-muted);
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: var(--max);
+      margin: 0 auto;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-brand {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--ink);
+    }
+    .footer-brand span { color: var(--accent); }
+    .footer-note {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero-left { padding: 3rem 1.5rem 3rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .feature-item:first-child { border-radius: 6px 6px 0 0; }
+      .feature-item:last-child { border-radius: 0 0 6px 6px; }
+      .cta-band { flex-direction: column; align-items: flex-start; }
+      nav { padding: 0 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-brand">Interview <span>Arcade</span></a>
+    <a href="modules.html" class="nav-link">View Modules →</a>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Gamified Interview Prep</div>
+
+      <h1 class="hero-title">
+        Play your way<br>to <em>cracking</em><br>interviews.
+      </h1>
+
+      <p class="hero-sub">
+        Ten interactive mini-games that turn dry technical concepts into
+        engaging challenges. Practice DSA, SQL, OOP, and more — without
+        the boredom.
+      </p>
+
+      <div class="hero-actions">
+        <a href="modules.html" class="btn-primary">
+          Explore Modules
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">10</div>
+          <div class="stat-label">Modules</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">0%</div>
+          <div class="stat-label">Backend</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Replays</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="module-preview">
+        <div class="mp-icon red">♟</div>
+        <div class="mp-name">Tic Tac Toe + OOP Quiz</div>
+        <div class="mp-desc">Loser answers 5 OOP questions</div>
+      </div>
+      <div class="module-preview">
+        <div class="mp-icon blue">🧩</div>
+        <div class="mp-name">Memory Card Game</div>
+        <div class="mp-desc">Match technical term pairs</div>
+      </div>
+      <div class="module-preview">
+        <div class="mp-icon green">📋</div>
+        <div class="mp-name">SQL Fill in the Blanks</div>
+        <div class="mp-desc">Complete queries, validate answers</div>
+      </div>
+      <div class="module-preview">
+        <div class="mp-icon amber">🔍</div>
+        <div class="mp-name">DSA Match</div>
+        <div class="mp-desc">Connect concepts using lines</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="features">
+    <div class="features-inner">
+      <div class="features-label">Why Interview Arcade</div>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-num">01</div>
+          <div class="feature-title">Learn by doing</div>
+          <div class="feature-desc">Every module is a mini-game, not a lecture. You absorb concepts by playing, failing, and replaying.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-num">02</div>
+          <div class="feature-title">No backend, no hassle</div>
+          <div class="feature-desc">Pure HTML, CSS and JavaScript. Open in any browser, no setup, no login, no cloud dependency.</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-num">03</div>
+          <div class="feature-title">Built for contributors</div>
+          <div class="feature-desc">Fork the repo, implement a module, and send a PR. A clean structure makes it easy to jump in.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-band">
+    <div class="cta-text">
+      <h2 class="cta-title">Ready to start practicing?</h2>
+      <p class="cta-sub">Pick a module and begin — no account required.</p>
+    </div>
+    <a href="modules.html" class="btn-primary" style="white-space: nowrap;">
+      See all modules
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+
+  <footer>
+    <div class="footer-brand">Interview <span>Arcade</span></div>
+    <div class="footer-note">Play. Learn. Crack Interviews.</div>
+  </footer>
+
+</body>
+</html>
